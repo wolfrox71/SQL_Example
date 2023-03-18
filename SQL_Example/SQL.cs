@@ -20,21 +20,23 @@ namespace program
          public void insert(string value1, string value2, string value3)
         {
             using var cmd = new SQLiteCommand(con);
-            cmd.CommandText = $"INSERT INTO TABLE {_table} VALUES ('{value1}', '{value2}', '{value3}')";
+            cmd.CommandText = $"INSERT INTO {_table} VALUES ('{value1}', '{value2}', '{value3}')";
             Console.WriteLine(cmd.CommandText);
             cmd.ExecuteNonQuery();
+            return;
         }
          public void createTable()
         {
             using var cmd = new SQLiteCommand(con);
-            cmd.CommandText = $"CREATE TABLE IF NOT EXISTS {_table}(userID INTEGER PRIMARY KEY, value1 TEXT, value2 TEXT, value3 TEXT)";
+            cmd.CommandText = $"CREATE TABLE IF NOT EXISTS {_table}(value1 TEXT, value2 TEXT, value3 TEXT)";
             cmd.ExecuteNonQuery();
+            return;
         }
-        public void readValues(string value1)
+        public string[] readValues(bool output_values=false)
         {
-
+            Console.WriteLine("Starting");
             using var cmd = new SQLiteCommand(con);
-            cmd.CommandText = $"SELECT userID from {_table} WHERE value1='{value1}'";
+            cmd.CommandText = $"SELECT * from {_table}";
             var reader = cmd.ExecuteReader();
 
             // if the number of fields returned == 0
@@ -51,12 +53,16 @@ namespace program
                     items.Add(reader.GetString(columnID));
                 }
             }
-
-            foreach (string item in items)
+            // only output the values if you want to 
+            if (output_values)
             {
-                Console.WriteLine(item);
+                foreach (string item in items)
+                {
+                    Console.WriteLine(item);
+                }
             }
-
+            Console.WriteLine("Ending");
+            return items.ToArray();
         }
     }
 }
