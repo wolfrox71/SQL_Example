@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity.Migrations.Model;
+using System.Data.Entity.ModelConfiguration.Configuration;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -11,13 +12,19 @@ namespace program
         {
             sql test = new sql("Users", "main.db");
             test.createTable();
-            test.insert("Test", "Something", "Else");
+            //test.clearTable();
+            //test.insert("Test2", "Something2", "Else2");
             Console.WriteLine("Ended insert");
-            var a = test.readValues();
-            Console.WriteLine("Got values");
-            foreach (var _A in a)
+            string[][] a = test.readValues();
+            Console.WriteLine($"Got {a.Length} values");
+            
+            foreach (var row in a)
             {
-                Console.WriteLine(_A);
+                foreach (var column in row)
+                {
+                    Console.WriteLine(column);
+                }
+                Console.WriteLine("\n-------------\n");
             }
         }
     }

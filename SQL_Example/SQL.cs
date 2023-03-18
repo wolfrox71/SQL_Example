@@ -32,9 +32,17 @@ namespace program
             cmd.ExecuteNonQuery();
             return;
         }
-        public string[] readValues(bool output_values=false)
+
+        public void clearTable()
         {
-            Console.WriteLine("Starting");
+            using var cmd = new SQLiteCommand(con);
+            cmd.CommandText = $"DELETE FROM {_table}";
+            cmd.ExecuteNonQuery();
+            return;
+        }
+        public string[][] readValues(bool output_values=false, bool debug=false)
+        {
+            if (debug) { Console.WriteLine("Starting"); }
             using var cmd = new SQLiteCommand(con);
             cmd.CommandText = $"SELECT * from {_table}";
             var reader = cmd.ExecuteReader();
@@ -42,26 +50,32 @@ namespace program
             // if the number of fields returned == 0
             // then no user was found and so the username is not in use
             // so return false
-            List<string> items = new List<string>();
+            List<string[]> items = new List<string[]>();
 
             while (reader.Read())
             {
+                List<string> row = new List<string>();
                 Trace.WriteLine(reader);
                 for (int columnID = 0; columnID < reader.GetValues().Count; columnID++)
                 {
                     Trace.WriteLine(reader.GetString(columnID));
-                    items.Add(reader.GetString(columnID));
+                    row.Add(reader.GetString(columnID));
                 }
+                items.Add(row.ToArray());
             }
             // only output the values if you want to 
             if (output_values)
             {
-                foreach (string item in items)
+                foreach (string[] item in items)
                 {
-                    Console.WriteLine(item);
+                    foreach (string _i in item)
+                    {
+                        Console.Write($"{item}  ");
+                    }
+                    Console.WriteLine("\n");
                 }
             }
-            Console.WriteLine("Ending");
+            if (debug) { Console.WriteLine("Ending"); }
             return items.ToArray();
         }
     }
